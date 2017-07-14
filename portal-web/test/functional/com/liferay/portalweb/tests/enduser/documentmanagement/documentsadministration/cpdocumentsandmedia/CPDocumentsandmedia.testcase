@@ -10,9 +10,21 @@
 	</set-up>
 
 	<tear-down>
-		<execute macro="PortalInstances#tearDownCP">
-			<var method="TestPropsUtil#get('test.portal.instance')" name="testPortalInstance" />
-		</execute>
+		<var method="TestPropsUtil#get('test.portal.instance')" name="testPortalInstance" />
+
+		<if>
+			<equals arg1="${testPortalInstance}" arg2="true" />
+			<then>
+				<execute macro="PortalInstances#tearDownCP" />
+			</then>
+			<else>
+				<execute macro="DMDocument#tearDownCP" />
+
+				<execute macro="DMFolder#tearDownCP" />
+
+				<execute macro="User#logoutPG" />
+			</else>
+		</if>
 	</tear-down>
 
 	<command name="AddContract" priority="4">
@@ -55,47 +67,10 @@
 		</execute>
 	</command>
 
-	<command name="AddDocument" priority="4">
-		<execute macro="Navigator#openURL" />
+	<command name="AddShortcutToSiteDocument" priority="5">
+		<property name="portal.acceptance" value="pending" />
+		<property name="testray.component.names" value="Training" />
 
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Documents and Media" />
-		</execute>
-
-		<execute macro="DMDocument#addCP">
-			<var name="dmDocumentDescription" value="DM Document Description1" />
-			<var name="dmDocumentFile" value="Document_1.txt" />
-			<var name="dmDocumentTitle" value="DM Document Title" />
-		</execute>
-
-		<execute macro="DMNavigator#gotoDocumentCP">
-			<var name="dmDocumentTitle" value="DM Document Title" />
-		</execute>
-
-		<execute macro="DMDocument#viewCP">
-			<var name="dmDocumentSize" value="0KB" />
-			<var name="dmDocumentTitle" value="DM Document Title" />
-		</execute>
-	</command>
-
-	<command name="AddFolder" priority="4">
-		<execute macro="Navigator#openURL" />
-
-		<execute macro="ProductMenu#gotoSitesContent">
-			<var name="portlet" value="Documents and Media" />
-		</execute>
-
-		<execute macro="DMFolder#addCP">
-			<var name="dmFolderDescription" value="DM Folder Description" />
-			<var name="dmFolderName" value="DM Folder Name" />
-		</execute>
-
-		<execute macro="DMFolder#viewCP">
-			<var name="dmFolderName" value="DM Folder Name" />
-		</execute>
-	</command>
-
-	<command name="AddShortcutToSiteDocument" priority="3">
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoControlPanelSites">
@@ -193,6 +168,7 @@
 
 	<command name="EditFolder" priority="5">
 		<property name="portal.acceptance" value="true" />
+		<property name="testray.component.names" value="Training" />
 
 		<execute macro="Navigator#openURL" />
 
@@ -345,6 +321,10 @@
 			<var name="dmFolderName" value="DM Folder Name" />
 		</execute>
 
+		<execute macro="DMFolder#viewCP">
+			<var name="dmFolderName" value="DM Folder Name" />
+		</execute>
+
 		<execute macro="Navigator#openURL" />
 
 		<execute macro="ProductMenu#gotoSitesContent">
@@ -376,7 +356,7 @@
 			<var name="portlet" value="Documents and Media" />
 		</execute>
 
-		<execute function="AssertVisible" locator1="ControlMenu#HEADER_TITLE" value1="Documents and Media" />
+		<execute function="AssertVisible" locator1="Portlet#HEADER" value1="Documents and Media" />
 
 		<execute macro="ImageEditor#gotoImageEditorViaDM">
 			<var name="dmDocumentTitle" value="Document_2.jpg" />

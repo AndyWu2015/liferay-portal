@@ -31,7 +31,7 @@ if (Validator.isNull(redirect)) {
 
 BlogsEntry entry = (BlogsEntry)request.getAttribute(WebKeys.BLOGS_ENTRY);
 
-long entryId = BeanParamUtil.getLong(entry, request, "entryId");
+long entryId = ParamUtil.getLong(request, "entryId", entry.getEntryId());
 
 AssetEntry assetEntry = AssetEntryLocalServiceUtil.getEntry(BlogsEntry.class.getName(), entry.getEntryId());
 
@@ -39,8 +39,12 @@ AssetEntryServiceUtil.incrementViewCounter(assetEntry);
 
 AssetUtil.addLayoutTags(request, AssetTagLocalServiceUtil.getTags(BlogsEntry.class.getName(), entry.getEntryId()));
 
-RatingsEntry ratingsEntry = RatingsEntryLocalServiceUtil.fetchEntry(themeDisplay.getUserId(), BlogsEntry.class.getName(), entry.getEntryId());
+RatingsEntry ratingsEntry = null;
 RatingsStats ratingsStats = RatingsStatsLocalServiceUtil.fetchStats(BlogsEntry.class.getName(), entry.getEntryId());
+
+if (ratingsStats != null) {
+	ratingsEntry = RatingsEntryLocalServiceUtil.fetchEntry(themeDisplay.getUserId(), BlogsEntry.class.getName(), entry.getEntryId());
+}
 
 request.setAttribute(WebKeys.LAYOUT_ASSET_ENTRY, assetEntry);
 
